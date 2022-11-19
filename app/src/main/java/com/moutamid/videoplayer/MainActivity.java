@@ -36,14 +36,10 @@ import com.downloader.PRDownloaderConfig;
 import com.downloader.Progress;
 import com.downloader.utils.Utils;
 import com.fxn.stash.Stash;
-import com.google.android.exoplayer2.offline.Downloader;
-import com.google.android.exoplayer2.offline.ProgressiveDownloader;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.potyvideo.library.AndExoPlayerView;
-import com.potyvideo.library.globalInterfaces.AndExoPlayerListener;
 
 import java.io.File;
 import java.io.IOException;
