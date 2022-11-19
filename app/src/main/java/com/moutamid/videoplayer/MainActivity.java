@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView btnImg;
     String stashSource;
     LinkModel linkModel;
+    boolean showPD;
     StartupOnBootUpReceiver bootUpReceiver = new StartupOnBootUpReceiver();
     String permission[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE};
 
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     if (stashSource.equals(downloadLink)){
                         String filename = Stash.getString("filename");
                         String link = dir.getPath() + "/" + filename;
+                        Toast.makeText(MainActivity.this, link, Toast.LENGTH_SHORT).show();
                         startVideo(link);
                     } else {
                         Stash.put("stashSource", downloadLink);
@@ -143,7 +145,9 @@ public class MainActivity extends AppCompatActivity {
                 .setOnStartOrResumeListener(new OnStartOrResumeListener() {
                     @Override
                     public void onStartOrResume() {
-                        progressDialog.show();
+                        showPD = Stash.getBoolean("oneTime", true);
+                        if (showPD)
+                            progressDialog.show();
                     }
                 })
                 .setOnPauseListener(new OnPauseListener() {
@@ -169,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         progressDialog.dismiss();
+                        Stash.put("oneTime", false);
                         String link = dir.getPath() + "/" + filename;
                         startVideo(link);
                     }
