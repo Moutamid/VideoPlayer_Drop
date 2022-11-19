@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         progressDialog.dismiss();
-                        String link = dir.getPath() + filename;
+                        String link = dir.getPath() + "/" + filename;
                         startVideo(link);
                     }
 
@@ -177,9 +177,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onError(Error error) {
                         progressDialog.dismiss();
                         if (error.isServerError()){
-                            Toast.makeText(MainActivity.this, "ser : " + error.getServerErrorMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, error.getServerErrorMessage(), Toast.LENGTH_SHORT).show();
                         } else if (error.isConnectionError()){
-                            Toast.makeText(MainActivity.this, "con : " + error.getConnectionException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "" + error.getConnectionException(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -193,8 +193,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void startVideo(String downloadLink){
-        Uri uri = Uri.parse(downloadLink);
+    public void startVideo(String link){
+        Uri uri = Uri.parse(link);
         videoView.setVideoURI(uri);
         videoView.start();
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
