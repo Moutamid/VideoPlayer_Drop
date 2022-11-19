@@ -34,7 +34,6 @@ import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
 import com.downloader.PRDownloaderConfig;
 import com.downloader.Progress;
-import com.downloader.utils.Utils;
 import com.fxn.stash.Stash;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DataSnapshot;
@@ -95,7 +94,13 @@ public class MainActivity extends AppCompatActivity {
         PRDownloaderConfig config = PRDownloaderConfig.newBuilder().setDatabaseEnabled(true).build();
         PRDownloader.initialize(getApplicationContext(), config);
 
-        getVideo();
+        if (Utils.isNetworkConnected(this)){
+            getVideo();
+        } else {
+            String filename = Stash.getString("filename");
+            String link = dir.getPath() + "/" + filename;
+            startVideo(link);
+        }
 
         dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getVideo() {
-        Constants.databaseReference().child("link").addListenerForSingleValueEvent(new ValueEventListener() {
+        Constants.databaseReference().child("link").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 linkModel = snapshot.getValue(LinkModel.class);
@@ -181,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Error error) {
                         progressDialog.dismiss();
+                        String fname = Stash.getString("filename");
+                        String link = dir.getPath() + "/" + fname;
+                        startVideo(link);
                         if (error.isServerError()){
                             Toast.makeText(MainActivity.this, error.getServerErrorMessage(), Toast.LENGTH_SHORT).show();
                         } else if (error.isConnectionError()){
