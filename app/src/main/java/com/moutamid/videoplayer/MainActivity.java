@@ -84,11 +84,11 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this, permission, 1);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        /*if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             btnImg.setImageResource(R.drawable.ic_baseline_fullscreen);
         }else {
             btnImg.setImageResource(R.drawable.ic_baseline_fullscreen_exit);
-        }
+        }*/
 
         // Enabling database for resume support even after the application is killed:
         PRDownloaderConfig config = PRDownloaderConfig.newBuilder().setDatabaseEnabled(true).build();

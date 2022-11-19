@@ -31,7 +31,7 @@
             android:id="@+id/btnImg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_baseline_fullscreen"
+            android:src="@drawable/ic_baseline_screen_rotation"
             android:layout_margin="5dp" />
 
     </com.google.android.material.card.MaterialCardView>
