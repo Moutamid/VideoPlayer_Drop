@@ -207,15 +207,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startVideo(String link){
-        Uri uri = Uri.parse(link);
-        videoView.setVideoURI(uri);
-        videoView.start();
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.setLooping(true);
-            }
-        });
+        try {
+            Uri uri = Uri.parse(link);
+            videoView.setVideoURI(uri);
+            videoView.start();
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.setLooping(true);
+                }
+            });
+        } catch (Exception e){
+            Log.d("TAG", e.getMessage());
+        }
     }
 
     @Override
