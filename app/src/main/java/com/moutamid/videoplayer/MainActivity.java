@@ -3,6 +3,7 @@ package com.moutamid.videoplayer;
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,6 +17,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -45,6 +47,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 
+@RequiresApi(api = Build.VERSION_CODES.R)
 public class MainActivity extends AppCompatActivity {
 
 //    https://dl.dropboxusercontent.com/s/lu0ga5ix0m9zzy2/VIDEO_6e995d33-5cbe-4ebe-8c15-e2f62cbb20f0.mp4
@@ -74,35 +77,37 @@ public class MainActivity extends AppCompatActivity {
         fullscreen = findViewById(R.id.fullscreen);
         btnImg = findViewById(R.id.btnImg);
 
-        stashSource = Stash.getString("stashSource");
-
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Video is Downloading...");
         progressDialog.setProgressStyle(progressDialog.STYLE_HORIZONTAL);
         progressDialog.setMax(100);
         progressDialog.setCancelable(false);
 
+        stashSource = Stash.getString("stashSource");
+
         ActivityCompat.requestPermissions(this, permission, 1);
 
-        /*if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        /* if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             btnImg.setImageResource(R.drawable.ic_baseline_fullscreen);
         }else {
             btnImg.setImageResource(R.drawable.ic_baseline_fullscreen_exit);
-        }*/
+        } */
 
         // Enabling database for resume support even after the application is killed:
         PRDownloaderConfig config = PRDownloaderConfig.newBuilder().setDatabaseEnabled(true).build();
         PRDownloader.initialize(getApplicationContext(), config);
 
+        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
         if (Utils.isNetworkConnected(this)){
             getVideo();
+            Log.d("loadVideo", "if");
         } else {
             String filename = Stash.getString("filename");
             String link = dir.getPath() + "/" + filename;
             startVideo(link);
+            Log.d("loadVideo", "else");
         }
-
-        dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
 //        dir = getRootDirPath(this);
 
@@ -112,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getVideo() {
+        Log.d("loadVideo", "get");
         Constants.databaseReference().child("link").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -120,15 +126,19 @@ public class MainActivity extends AppCompatActivity {
                 source = source.replace("?dl=0", "");
                 downloadLink = source.replace("www.dropbox.com", "dl.dropboxusercontent.com");
                 if (stashSource.isEmpty() || stashSource == null){
+                    Log.d("loadVideo", "get IF");
                     Stash.put("stashSource", downloadLink);
                     downloadVideo(downloadLink);
                 } else {
-                    if (stashSource.equals(downloadLink)){
+                    if (stashSource.equals(downloadLink)) {
+                        Log.d("loadVideo", "get else if");
                         String filename = Stash.getString("filename");
                         String link = dir.getPath() + "/" + filename;
-                        Toast.makeText(MainActivity.this, link, Toast.LENGTH_SHORT).show();
+                        Log.d("loadVideo", "link :" + link);
+                        Log.d("loadVideo", "stash :" + stashSource);
                         startVideo(link);
                     } else {
+                        Log.d("loadVideo", "get else else");
                         Stash.put("stashSource", downloadLink);
                         downloadVideo(downloadLink);
                     }
@@ -143,8 +153,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void downloadVideo(String downloadLink) {
+        Log.d("loadVideo", "download");
         String filename = URLUtil.guessFileName(downloadLink, null, null);
         Stash.put("filename", filename);
+        Log.d("loadVideo", "filename : " + filename);
+        Log.d("loadVideo", "download link : " + downloadLink);
+
         PRDownloader.download(downloadLink, dir.getPath(), filename)
                 .build()
                 .setOnStartOrResumeListener(new OnStartOrResumeListener() {
@@ -180,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         Stash.put("oneTime", false);
                         String link = dir.getPath() + "/" + filename;
+                        Log.d("loadVideo", "link : " + link);
                         startVideo(link);
                     }
 
@@ -191,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         startVideo(link);
                         if (error.isServerError()){
                             Toast.makeText(MainActivity.this, error.getServerErrorMessage(), Toast.LENGTH_SHORT).show();
-                        } else if (error.isConnectionError()){
+                        } else if (error.isConnectionError()) {
                             Toast.makeText(MainActivity.this, "" + error.getConnectionException(), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -207,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startVideo(String link){
+        Log.d("loadVideo", "startVideo: " + link);
         try {
             Uri uri = Uri.parse(link);
             videoView.setVideoURI(uri);
