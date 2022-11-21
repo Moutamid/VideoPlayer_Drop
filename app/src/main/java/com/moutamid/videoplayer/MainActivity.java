@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 //    https://dl.dropboxusercontent.com/s/lu0ga5ix0m9zzy2/VIDEO_6e995d33-5cbe-4ebe-8c15-e2f62cbb20f0.mp4
 //    https://www.dropbox.com/s/lu0ga5ix0m9zzy2/VIDEO_6e995d33-5cbe-4ebe-8c15-e2f62cbb20f0.mp4?dl=0
 
+    // https://1drv.ms/v/s!AnuXB9tZn8hYhHFCJKByFtpliuD4?e=s2iaOc
+
     String source;
     String downloadLink;
     File dir;
@@ -123,8 +125,14 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 linkModel = snapshot.getValue(LinkModel.class);
                 source = linkModel.getLink();
-                source = source.replace("?dl=0", "");
-                downloadLink = source.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+
+                if(source.contains("www.dropbox.com")){
+                    source = source.replace("?dl=0", "");
+                    downloadLink = source.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+                } else {
+                    downloadLink = source;
+                }
+
                 if (stashSource.isEmpty() || stashSource == null){
                     Log.d("loadVideo", "get IF");
                     Stash.put("stashSource", downloadLink);
