@@ -229,10 +229,13 @@ public class MainActivity extends AppCompatActivity {
                         String fname = Stash.getString("filename");
                         String link = dir.getPath() + "/" + fname;
                         startVideo(link);
+                        Toast.makeText(MainActivity.this, source + " is not a downloadable link", Toast.LENGTH_SHORT).show();
                         if (error.isServerError()){
-                            Toast.makeText(MainActivity.this, error.getServerErrorMessage(), Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(MainActivity.this, error.getServerErrorMessage(), Toast.LENGTH_SHORT).show();
+                            Log.d("loadVideo", "onError: " + error.getServerErrorMessage());
                         } else if (error.isConnectionError()) {
-                            Toast.makeText(MainActivity.this, "" + error.getConnectionException(), Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(MainActivity.this, "" + error.getConnectionException(), Toast.LENGTH_SHORT).show();
+                            Log.d("loadVideo", "onError: " + error.getConnectionException());
                         }
                     }
                 });
