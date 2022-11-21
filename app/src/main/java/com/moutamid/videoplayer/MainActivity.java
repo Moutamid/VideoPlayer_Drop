@@ -44,6 +44,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -53,11 +55,13 @@ public class MainActivity extends AppCompatActivity {
 //    https://dl.dropboxusercontent.com/s/lu0ga5ix0m9zzy2/VIDEO_6e995d33-5cbe-4ebe-8c15-e2f62cbb20f0.mp4
 //    https://www.dropbox.com/s/lu0ga5ix0m9zzy2/VIDEO_6e995d33-5cbe-4ebe-8c15-e2f62cbb20f0.mp4?dl=0
 
-    // https://1drv.ms/v/s!AnuXB9tZn8hYhHFCJKByFtpliuD4?e=s2iaOc
+//    https://1drv.ms/v/s!AqMyTdW5-HJVmZBBkZSY1Ex9FMGIdw
+//    https://api.onedrive.com/v1.0/shares/s!AqMyTdW5-HJVmZBBkZSY1Ex9FMGIdw/root/content
 
     String source;
     String downloadLink;
     File dir;
+    String drivelink[];
     VideoView videoView;
     ProgressDialog progressDialog;
     MaterialCardView fullscreen;
@@ -125,10 +129,14 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 linkModel = snapshot.getValue(LinkModel.class);
                 source = linkModel.getLink();
-
-                if(source.contains("www.dropbox.com")){
+                if (source.contains("dropbox.com")){
                     source = source.replace("?dl=0", "");
                     downloadLink = source.replace("www.dropbox.com", "dl.dropboxusercontent.com");
+                } else if (source.contains("1drv.ms")){
+                    drivelink = source.split("/");
+                    source = drivelink[drivelink.length-1];
+                    downloadLink = "https://api.onedrive.com/v1.0/shares/" + source + "/root/content";
+                    Log.d("loadVideo", "downloadLink: " + downloadLink);
                 } else {
                     downloadLink = source;
                 }
@@ -139,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     downloadVideo(downloadLink);
                 } else {
                     if (stashSource.equals(downloadLink)) {
+                        Log.d("loadVideo", "downloadLink: " + downloadLink);
                         Log.d("loadVideo", "get else if");
                         String filename = Stash.getString("filename");
                         String link = dir.getPath() + "/" + filename;
@@ -162,7 +171,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void downloadVideo(String downloadLink) {
         Log.d("loadVideo", "download");
-        String filename = URLUtil.guessFileName(downloadLink, null, null);
+        String filename;
+        if (downloadLink.contains("api.onedrive.com")){
+            Date date = new Date() ;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss") ;
+            filename = dateFormat.format(date) + ".mp4";
+        } else {
+            filename = URLUtil.guessFileName(downloadLink, null, null);
+        }
+
         Stash.put("filename", filename);
         Log.d("loadVideo", "filename : " + filename);
         Log.d("loadVideo", "download link : " + downloadLink);
