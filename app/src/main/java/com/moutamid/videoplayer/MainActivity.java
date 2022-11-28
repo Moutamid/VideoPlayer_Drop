@@ -141,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
                     downloadLink = source;
                 }
 
+                if (linkModel.isRotate() || !linkModel.isRotate()){
+                    orientataion();
+                }
+
                 if (stashSource.isEmpty() || stashSource == null){
                     Log.d("loadVideo", "get IF");
                     Stash.put("stashSource", downloadLink);
