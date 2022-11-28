@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getVideo() {
         Log.d("loadVideo", "get");
-        Constants.databaseReference().child("link").addValueEventListener(new ValueEventListener() {
+        Constants.databaseReference().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 linkModel = snapshot.getValue(LinkModel.class);
